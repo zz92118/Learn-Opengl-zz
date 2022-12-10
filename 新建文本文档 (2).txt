@@ -1,0 +1,4 @@
+ssh-keygen -t rsa -C "921185540@qq.com"
+
+
+在 c admisator xxx.pub文件中查看sshkey public 然后放到github里面
