@@ -285,15 +285,16 @@ glDrawArrays(GL_TRIANGLES, 0, 36);
 
 ### Z缓冲
 
-OpenGL存储它的所有深度信息于一个Z缓冲(Z-buffer)中，也被称为<def>深度缓冲</def>(Depth Buffer)。GLFW会自动为你生成这样一个缓冲（就像它也有一个颜色缓冲来存储输出图像的颜色）。深度值存储在每个片段里面（作为片段的**z**值），当片段想要输出它的颜色时，OpenGL会将它的深度值和z缓冲进行比较，如果当前的片段在其它片段之后，它将会被丢弃，否则将会覆盖。这个过程称为<def>深度测试</def>(Depth Testing)，它是由OpenGL自动完成的。
+***OpenGL存储它的所有深度信息于一个Z缓冲(Z-buffer)中，也被称为<def>深度缓冲</def>(Depth Buffer)。***GLFW会自动为你生成这样一个缓冲（就像它也有一个颜色缓冲来存储输出图像的颜色）。深度值存储在每个片段里面（作为片段的**z**值），当片段想要输出它的颜色时，OpenGL会将它的深度值和z缓冲进行比较，如果当前的片段在其它片段之后，它将会被丢弃，否则将会覆盖。这个过程称为<def>深度测试</def>(Depth Testing)，它是由OpenGL自动完成的。
 
 然而，如果我们想要确定OpenGL真的执行了深度测试，首先我们要告诉OpenGL我们想要启用深度测试；它默认是关闭的。我们可以通过<fun>glEnable</fun>函数来开启深度测试。<fun>glEnable</fun>和<fun>glDisable</fun>函数允许我们启用或禁用某个OpenGL功能。这个功能会一直保持启用/禁用状态，直到另一个调用来禁用/启用它。现在我们想启用深度测试，需要开启<var>GL_DEPTH_TEST</var>：
-
+***
 ```c++
 glEnable(GL_DEPTH_TEST);
 ```
+***
 
-因为我们使用了深度测试，我们也想要在每次渲染迭代之前清除深度缓冲（否则前一帧的深度信息仍然保存在缓冲中）。就像清除颜色缓冲一样，我们可以通过在<fun>glClear</fun>函数中指定<var>DEPTH_BUFFER_BIT</var>位来清除深度缓冲：
+***因为我们使用了深度测试，我们也想要在每次渲染迭代之前清除深度缓冲（否则前一帧的深度信息仍然保存在缓冲中）。就像清除颜色缓冲一样，我们可以通过在<fun>glClear</fun>函数中指定<var>DEPTH_BUFFER_BIT</var>位来清除深度缓冲：***
 
 ```c++
 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -351,7 +352,11 @@ for(unsigned int i = 0; i < 10; i++)
 ## 练习
 
 - 对GLM的`projection`函数中的`FoV`和`aspect-ratio`参数进行实验。看能否搞懂它们是如何影响透视平截头体的。
+视角
+
 - 将观察矩阵在各个方向上进行位移，来看看场景是如何改变的。注意把观察矩阵当成摄像机对象。
+
+
 - 使用模型矩阵只让是3倍数的箱子旋转（以及第1个箱子），而让剩下的箱子保持静止。[参考解答](https://learnopengl.com/code_viewer.php?code=getting-started/coordinate_systems-exercise3)。
 
 
