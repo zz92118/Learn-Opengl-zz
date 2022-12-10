@@ -144,7 +144,7 @@ int main()
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     ourShader.use(); 
-    ourShader.setInt("texture1", 0);
+    ourShader.setInt("texture1", 0); //封装的方法
     ourShader.setInt("texture2", 1);
 
 
@@ -167,14 +167,20 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
-        // create transformations
-        glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
-        transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        ////// create transformations
+        //glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        //transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f)); 
+        //transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        // get matrix's uniform location and set matrix
+        //先平移 在旋转 交换顺序
+        //在屏幕中失去了显示 与相机标架会相关
+        glm::mat4 transform;
+        transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f)); // Switched the order
+        transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f)); // Switched the order          
+
+        // get matrix's uniform location and set matrix 传递给uniform变量
         ourShader.use();
-        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform"); //第二个transform是shader中的参数
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
         // render container
