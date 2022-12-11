@@ -16,8 +16,8 @@ void main()
   	
     // diffuse 
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(lightPos - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 lightDir = normalize(lightPos - FragPos); //标准化的单位向量
+    float diff = max(dot(norm, lightDir), 0.0); //确保不是负数
     vec3 diffuse = diff * lightColor;
             
     vec3 result = (ambient + diffuse) * objectColor;

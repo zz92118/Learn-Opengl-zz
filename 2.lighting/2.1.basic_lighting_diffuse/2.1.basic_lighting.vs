@@ -12,7 +12,7 @@ uniform mat4 projection;
 void main()
 {
     FragPos = vec3(model * vec4(aPos, 1.0));
-    Normal = aNormal;  
+    Normal = aNormal;   //顶点着色器传递到片段着色器。
     
     gl_Position = projection * view * vec4(FragPos, 1.0);
 }
