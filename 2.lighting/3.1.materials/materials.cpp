@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <learnopengl/filesystem.h>
+//#include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <learnopengl/camera.h>
 
@@ -21,7 +21,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -77,8 +77,8 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader lightingShader("3.1.materials.vs", "3.1.materials.fs");
-    Shader lightCubeShader("3.1.light_cube.vs", "3.1.light_cube.fs");
+    Shader lightingShader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\3.1.materials\\3.1.materials.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\3.1.materials\\3.1.materials.fs");
+    Shader lightCubeShader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\3.1.materials\\3.1.light_cube.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\3.1.materials\\3.1.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -190,6 +190,7 @@ int main()
         lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
         // material properties
+        //通过一个结构对uniform的信息进行访问
         lightingShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
         lightingShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
         lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f); // specular lighting doesn't have full effect on this object's material

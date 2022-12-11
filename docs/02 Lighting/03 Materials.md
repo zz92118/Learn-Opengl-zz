@@ -8,8 +8,11 @@
 
 在现实世界里，每个物体会对光产生不同的反应。比如，钢制物体看起来通常会比陶土花瓶更闪闪发光，一个木头箱子也不会与一个钢制箱子反射同样程度的光。有些物体反射光的时候不会有太多的散射(Scatter)，因而产生较小的高光点，而有些物体则会散射很多，产生一个有着更大半径的高光点。如果我们想要在OpenGL中模拟多种类型的物体，我们必须针对每种表面定义不同的<def>材质</def>(Material)属性。
 
-在上一节中，我们定义了一个物体和光的颜色，并结合环境光与镜面强度分量，来决定物体的视觉输出。当描述一个表面时，我们可以分别为三个光照分量定义一个材质颜色(Material Color)：环境光照(Ambient Lighting)、漫反射光照(Diffuse Lighting)和镜面光照(Specular Lighting)。通过为每个分量指定一个颜色，我们就能够对表面的颜色输出有细粒度的控制了。现在，我们再添加一个反光度(Shininess)分量，结合上述的三个颜色，我们就有了全部所需的材质属性了：
-
+在上一节中，我们定义了一个物体和光的颜色，并结合环境光与镜面强度分量，来决定物体的视觉输出。
+***
+当描述一个表面时，我们可以分别为三个光照分量定义一个材质颜色(Material Color)：环境光照(Ambient Lighting)、漫反射光照(Diffuse Lighting)和镜面光照(Specular Lighting)。通过为每个分量指定一个颜色，我们就能够对表面的颜色输出有细粒度的控制了。现在，我们再添加一个反光度(Shininess)分量，结合上述的三个颜色，我们就有了全部所需的材质属性了：
+***
+***
 ```c++
 
 #version 330 core
@@ -19,7 +22,7 @@ struct Material {
     vec3 specular;
     float shininess;
 }; 
-  
+***
 uniform Material material;
 ```
 
@@ -95,7 +98,9 @@ vec3 diffuse  = vec3(1.0) * (diff * material.diffuse);
 vec3 specular = vec3(1.0) * (spec * material.specular);
 ```
 
-所以物体的每个材质属性对每一个光照分量都返回了最大的强度。对单个光源来说，这些`vec3(1.0)`值同样可以对每种光源分别改变，而这通常就是我们想要的。现在，物体的环境光分量完全地影响了立方体的颜色，可是环境光分量实际上不应该对最终的颜色有这么大的影响，所以我们会将光源的环境光强度设置为一个小一点的值，从而限制环境光颜色：
+所以物体的每个材质属性对每一个光照分量都返回了最大的强度。对单个光源来说，这些`vec3(1.0)`值同样可以对每种光源分别改变，而这通常就是我们想要的。
+
+***现在，物体的环境光分量完全地影响了立方体的颜色，可是环境光分量实际上不应该对最终的颜色有这么大的影响，所以我们会将光源的环境光强度设置为一个小一点的值，从而限制环境光颜色：***
 
 ```c++
 vec3 ambient = vec3(0.1) * material.ambient;
@@ -169,3 +174,16 @@ lightingShader.setVec3("light.diffuse", diffuseColor);
 
 - 你能做到这件事吗，改变光照颜色导致改变光源立方体的颜色？
 - 你能像教程一开始那样，通过定义相应的材质来模拟现实世界的物体吗？注意[材质表格](http://devernay.free.fr/cours/opengl/materials.html)中的环境光值与漫反射值不一样，它们没有考虑光照的强度。要想正确地设置它们的值，你需要将所有的光照强度都设置为`vec3(1.0)`，这样才能得到一致的输出：[参考解答](https://learnopengl.com/code_viewer_gh.php?code=src/2.lighting/3.2.materials_exercise1/materials_exercise1.cpp)：青色塑料(Cyan Plastic)容器。
+
+
+# Summary
+
+上一节课没有考虑过物体的材质，只考虑了光源对 ambient diffuse spec的影响，这节课在上节课的基础上加上了物体本身的属性。
+
+物体实际呈现出的颜色是 light.ambient * material.ambient
+
+需要光照的材质 光源的材质 写在fragment shader中
+
+所以light结构中的ambient diffuse spec是光源的属性，注意这里只有一个点光源，我们通过假定ambient强度来模拟局部的环境光强，实际情况中ambient应该是需要通过计算得到，如Ray tracing等基于物理渲染的方法
+
+把环境光照添加到场景里非常简单。我们用光的颜色乘以一个很小的常量环境因子，再乘以物体的颜色，然后将最终结果作为片段的颜色：
