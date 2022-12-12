@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <learnopengl/filesystem.h>
+//#include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <learnopengl/camera.h>
 
@@ -79,13 +79,13 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader lightingShader("4.2.lighting_maps.vs", "4.2.lighting_maps.fs");
-    Shader lightCubeShader("4.2.light_cube.vs", "4.2.light_cube.fs");
+    Shader lightingShader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\4.2.lighting_maps_specular_map\\4.2.lighting_maps.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\4.2.lighting_maps_specular_map\\4.2.lighting_maps.fs");
+    Shader lightCubeShader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\4.2.lighting_maps_specular_map\\4.2.light_cube.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\4.2.lighting_maps_specular_map\\4.2.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-        // positions          // normals           // texture coords
+        // positions          // normals           // texture coords 每个面使用了相同的纹理贴图
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
          0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
          0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
@@ -156,10 +156,11 @@ int main()
 
     // load textures (we now use a utility function to keep the code more organized)
     // -----------------------------------------------------------------------------
-    unsigned int diffuseMap = loadTexture(FileSystem::getPath("resources/textures/container2.png").c_str());
-    unsigned int specularMap = loadTexture(FileSystem::getPath("resources/textures/container2_specular.png").c_str());
+    unsigned int diffuseMap = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\container2.png");
+    unsigned int specularMap = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\container2_specular.png");
 
-    // shader configuration
+    // shader configuration shader
+    // 找到对应的位置
     // --------------------
     lightingShader.use();
     lightingShader.setInt("material.diffuse", 0);
@@ -191,8 +192,8 @@ int main()
         lightingShader.setVec3("viewPos", camera.Position);
 
         // light properties
-        lightingShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-        lightingShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
+        lightingShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f);
+        lightingShader.setVec3("light.diffuse", 0.1f, 0.1f, 0.1f);
         lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
         // material properties

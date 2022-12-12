@@ -46,6 +46,7 @@ void main()
     
     // attenuation
     float distance    = length(light.position - FragPos);
+    // 根据多项式公式计算衰减 
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
 
     ambient  *= attenuation;  

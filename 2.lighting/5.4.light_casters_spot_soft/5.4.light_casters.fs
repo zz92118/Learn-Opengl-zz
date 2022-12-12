@@ -51,6 +51,7 @@ void main()
     float theta = dot(lightDir, normalize(-light.direction)); 
     float epsilon = (light.cutOff - light.outerCutOff);
     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+    // 将不对环境光做出影响，让它总是能有一点光
     diffuse  *= intensity;
     specular *= intensity;
     
