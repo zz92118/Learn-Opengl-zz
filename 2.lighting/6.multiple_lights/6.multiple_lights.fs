@@ -62,6 +62,7 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 void main()
 {    
     // properties
+    // 最后呈现出的系统颜色
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
     
@@ -79,6 +80,7 @@ void main()
     // phase 3: spot light
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
     
+    //final color
     FragColor = vec4(result, 1.0);
 }
 

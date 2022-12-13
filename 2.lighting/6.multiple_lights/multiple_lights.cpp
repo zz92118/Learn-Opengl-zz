@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <learnopengl/filesystem.h>
+//#include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <learnopengl/camera.h>
 
@@ -79,8 +79,8 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader lightingShader("6.multiple_lights.vs", "6.multiple_lights.fs");
-    Shader lightCubeShader("6.light_cube.vs", "6.light_cube.fs");
+    Shader lightingShader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\6.multiple_lights\\6.multiple_lights.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\6.multiple_lights\\6.multiple_lights.fs");
+    Shader lightCubeShader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\6.multiple_lights\\6.light_cube.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\2.lighting\\6.multiple_lights\\6.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -141,7 +141,7 @@ int main()
         glm::vec3( 1.5f,  0.2f, -1.5f),
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
-    // positions of the point lights
+    // positions of the point lights 点光源的位置
     glm::vec3 pointLightPositions[] = {
         glm::vec3( 0.7f,  0.2f,  2.0f),
         glm::vec3( 2.3f, -3.3f, -4.0f),
@@ -176,8 +176,8 @@ int main()
 
     // load textures (we now use a utility function to keep the code more organized)
     // -----------------------------------------------------------------------------
-    unsigned int diffuseMap = loadTexture(FileSystem::getPath("resources/textures/container2.png").c_str());
-    unsigned int specularMap = loadTexture(FileSystem::getPath("resources/textures/container2_specular.png").c_str());
+    unsigned int diffuseMap = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\container2.png");
+    unsigned int specularMap = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\container2_specular.png");
 
     // shader configuration
     // --------------------
@@ -210,6 +210,7 @@ int main()
         lightingShader.setVec3("viewPos", camera.Position);
         lightingShader.setFloat("material.shininess", 32.0f);
 
+        //设置光照
         /*
            Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index 
            the proper PointLight struct in the array to set each uniform variable. This can be done more code-friendly
