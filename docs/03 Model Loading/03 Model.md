@@ -6,7 +6,9 @@
 翻译     | Krasjet
 校对     | 暂未校对
 
-现在是时候接触Assimp并创建实际的加载和转换代码了。这个教程的目标是创建另一个类来完整地表示一个模型，或者说是包含多个网格，甚至是多个物体的模型。一个包含木制阳台、塔楼、甚至游泳池的房子可能仍会被加载为一个模型。我们会使用Assimp来加载模型，并将它转换(Translate)至多个在[上一节](02 Mesh.md)中创建的<var>Mesh</var>对象。
+现在是时候接触Assimp并创建实际的加载和转换代码了。这个教程的目标是创建另一个类来完整地表示一个模型，或者说是包含多个网格，甚至是多个物体的模型。一个包含木制阳台、塔楼、甚至游泳池的房子可能仍会被加载为一个模型。
+
+***我们会使用Assimp来加载模型，并将它转换(Translate)至多个在[上一节](02 Mesh.md)中创建的<var>Mesh</var>对象。***
 
 
 事不宜迟，我会先把<fun>Model</fun>类的结构给你：
@@ -60,10 +62,12 @@ void Draw(Shader shader)
 
 Assimp很棒的一点在于，它抽象掉了加载不同文件格式的所有技术细节，只需要一行代码就能完成所有的工作：
 
+***
 ```c++
 Assimp::Importer importer;
 const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 ```
+***
 
 我们首先声明了Assimp命名空间内的一个<fun>Importer</fun>，之后调用了它的<var>ReadFile</var>函数。这个函数需要一个文件路径，它的第二个参数是一些<def>后期处理</def>(Post-processing)的选项。除了加载文件之外，Assimp允许我们设定一些选项来强制它对导入的数据做一些额外的计算或操作。通过设定<var>aiProcess_Triangulate</var>，我们告诉Assimp，如果模型不是（全部）由三角形组成，它需要将模型所有的图元形状变换为三角形。<var>aiProcess_FlipUVs</var>将在处理的时候翻转y轴的纹理坐标（你可能还记得我们在[纹理](../01 Getting started/06 Textures.md)教程中说过，在OpenGL中大部分的图像的y轴都是反的，所以这个后期处理选项将会修复这个）。其它一些比较有用的选项有：
 
@@ -71,7 +75,9 @@ const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess
 - <var>aiProcess_SplitLargeMeshes</var>：将比较大的网格分割成更小的子网格，如果你的渲染有最大顶点数限制，只能渲染较小的网格，那么它会非常有用。
 - <var>aiProcess_OptimizeMeshes</var>：和上个选项相反，它会将多个小网格拼接为一个大的网格，减少绘制调用从而进行优化。
 
-Assimp提供了很多有用的后期处理指令，你可以在[这里](http://assimp.sourceforge.net/lib_html/postprocess_8h.html)找到全部的指令。实际上使用Assimp加载模型是非常容易的（你也可以看到）。困难的是之后使用返回的场景对象将加载的数据转换到一个<fun>Mesh</fun>对象的数组。
+Assimp提供了很多有用的后期处理指令，你可以在[这里](http://assimp.sourceforge.net/lib_html/postprocess_8h.html)找到全部的指令。
+
+***实际上使用Assimp加载模型是非常容易的（你也可以看到）。困难的是之后使用返回的场景对象将加载的数据转换到一个<fun>Mesh</fun>对象的数组。***
 
 完整的<fun>loadModel</fun>函数将会是这样的：
 
@@ -88,7 +94,7 @@ void loadModel(string path)
     }
     directory = path.substr(0, path.find_last_of('/'));
 
-    processNode(scene->mRootNode, scene);
+    processNode(scene->mRootNode, scene); //将根节点传入处理
 }
 ```
 
@@ -121,16 +127,19 @@ void processNode(aiNode *node, const aiScene *scene)
 
 !!! Important
 
-	认真的读者可能会发现，我们可以基本上忘掉处理任何的节点，只需要遍历场景对象的所有网格，就不需要为了索引做这一堆复杂的东西了。我们仍这么做的原因是，使用节点的最初想法是将网格之间定义一个父子关系。通过这样递归地遍历这层关系，我们就能将某个网格定义为另一个网格的父网格了。  
-	这个系统的一个使用案例是，当你想位移一个汽车的网格时，你可以保证它的所有子网格（比如引擎网格、方向盘网格、轮胎网格）都会随着一起位移。这样的系统能够用父子关系很容易地创建出来。
+认真的读者可能会发现，我们可以基本上忘掉处理任何的节点，只需要遍历场景对象的所有网格，就不需要为了索引做这一堆复杂的东西了。我们仍这么做的原因是，使用节点的最初想法是将网格之间定义一个父子关系。通过这样递归地遍历这层关系，我们就能将某个网格定义为另一个网格的父网格了。  
+这个系统的一个使用案例是，当你想位移一个汽车的网格时，你可以保证它的所有子网格（比如引擎网格、方向盘网格、轮胎网格）都会随着一起位移。这样的系统能够用父子关系很容易地创建出来。
 
-	然而，现在我们并没有使用这样一种系统，但如果你想对你的网格数据有更多的控制，通常都是建议使用这一种方法的。这种类节点的关系毕竟是由创建了这个模型的艺术家所定义。
+然而，现在我们并没有使用这样一种系统，但如果你想对你的网格数据有更多的控制，通常都是建议使用这一种方法的。这种类节点的关系毕竟是由创建了这个模型的艺术家所定义。
 
 下一步就是将Assimp的数据解析到上一节中创建的<fun>Mesh</fun>类中。
 
 ### 从Assimp到网格
 
-将一个`aiMesh`对象转化为我们自己的网格对象不是那么困难。我们要做的只是访问网格的相关属性并将它们储存到我们自己的对象中。<fun>processMesh</fun>函数的大体结构如下：
+将一个`aiMesh`对象转化为我们自己的网格对象不是那么困难。
+
+***
+***我们要做的只是访问网格的相关属性并将它们储存到我们自己的对象中。<fun>processMesh</fun>函数的大体结构如下：***
 
 ```c++
 Mesh processMesh(aiMesh *mesh, const aiScene *scene)
@@ -157,8 +166,9 @@ Mesh processMesh(aiMesh *mesh, const aiScene *scene)
     return Mesh(vertices, indices, textures);
 }
 ```
+***
 
-处理网格的过程主要有三部分：获取所有的顶点数据，获取它们的网格索引，并获取相关的材质数据。处理后的数据将会储存在三个vector当中，我们会利用它们构建一个<fun>Mesh</fun>对象，并返回它到函数的调用者那里。
+***处理网格的过程主要有三部分：获取所有的顶点数据，获取它们的网格索引，并获取相关的材质数据。处理后的数据将会储存在三个vector当中，我们会利用它们构建一个<fun>Mesh</fun>对象，并返回它到函数的调用者那里。***
 
 获取顶点数据非常简单，我们定义了一个<fun>Vertex</fun>结构体，我们将在每个迭代之后将它加到<var>vertices</var>数组中。我们会遍历网格中的所有顶点（使用`mesh->mNumVertices`来获取）。在每个迭代中，我们希望使用所有的相关数据填充这个结构体。顶点的位置是这样处理的：
 
@@ -233,7 +243,8 @@ if(mesh->mMaterialIndex >= 0)
 }
 ```
 
-我们首先从场景的<var>mMaterials</var>数组中获取`aiMaterial`对象。接下来我们希望加载网格的漫反射和/或镜面光贴图。一个材质对象的内部对每种纹理类型都存储了一个纹理位置数组。不同的纹理类型都以`aiTextureType_`为前缀。我们使用一个叫做<fun>loadMaterialTextures</fun>的工具函数来从材质中获取纹理。这个函数将会返回一个<fun>Texture</fun>结构体的vector，我们将在模型的<var>textures</var> vector的尾部之后存储它。
+我们首先从场景的<var>mMaterials</var>数组中获取`aiMaterial`对象。接下来我们希望加载网格的漫反射和/或镜面光贴图。一个材质对象的内部对每种纹理类型都存储了一个纹理位置数组。不同的纹理类型都以`aiTextureType_`为前缀。***我们使用一个叫做<fun>loadMaterialTextures</fun>的工具函数来从材质中获取纹理。***
+这个函数将会返回一个<fun>Texture</fun>结构体的vector，我们将在模型的<var>textures</var> vector的尾部之后存储它。
 
 <fun>loadMaterialTextures</fun>函数遍历了给定纹理类型的所有纹理位置，获取了纹理的文件位置，并加载并和生成了纹理，将信息储存在了一个<fun>Vertex</fun>结构体中。它看起来会像这样：
 
@@ -255,7 +266,13 @@ vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string
 }
 ```
 
-我们首先通过<fun>GetTextureCount</fun>函数检查储存在材质中纹理的数量，这个函数需要一个纹理类型。我们会使用<fun>GetTexture</fun>获取每个纹理的文件位置，它会将结果储存在一个`aiString`中。我们接下来使用另外一个叫做<fun>TextureFromFile</fun>的工具函数，它将会（用`stb_image.h`）加载一个纹理并返回该纹理的ID。如果你不确定这样的代码是如何写出来的话，可以查看最后的完整代码。
+***我们首先通过<fun>GetTextureCount</fun>函数检查储存在材质中纹理的数量，这个函数需要一个纹理类型。***
+
+***我们会使用<fun>GetTexture</fun>获取每个纹理的文件位置，***
+它会将结果储存在一个`aiString`中。
+
+***我们接下来使用另外一个叫做<fun>TextureFromFile</fun>的工具函数，它将会（用`stb_image.h`）加载一个纹理并返回该纹理的ID。***
+如果你不确定这样的代码是如何写出来的话，可以查看最后的完整代码。
 
 !!! Important
 
@@ -269,7 +286,11 @@ vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string
 
 这还没有完全结束，因为我们还想做出一个重大的（但不是完全必须的）优化。大多数场景都会在多个网格中重用部分纹理。还是想想一个房子，它的墙壁有着花岗岩的纹理。这个纹理也可以被应用到地板、天花板、楼梯、桌子，甚至是附近的一口井上。加载纹理并不是一个开销不大的操作，在我们当前的实现中，即便同样的纹理已经被加载过很多遍了，对每个网格仍会加载并生成一个新的纹理。这很快就会变成模型加载实现的性能瓶颈。
 
-所以我们会对模型的代码进行调整，将所有加载过的纹理全局储存，每当我们想加载一个纹理的时候，首先去检查它有没有被加载过。如果有的话，我们会直接使用那个纹理，并跳过整个加载流程，来为我们省下很多处理能力。为了能够比较纹理，我们还需要储存它们的路径：
+***所以我们会对模型的代码进行调整，将所有加载过的纹理全局储存，***
+
+***每当我们想加载一个纹理的时候，首先去检查它有没有被加载过。***
+
+如果有的话，我们会直接使用那个纹理，并跳过整个加载流程，来为我们省下很多处理能力。为了能够比较纹理，我们还需要储存它们的路径：
 
 ```c++
 struct Texture {
@@ -279,7 +300,7 @@ struct Texture {
 };
 ```
 
-接下来我们将所有加载过的纹理储存在另一个vector中，在模型类的顶部声明为一个私有变量：
+***接下来我们将所有加载过的纹理储存在另一个vector中，在模型类的顶部声明为一个私有变量：***
 
 ```c++
 vector<Texture> textures_loaded;

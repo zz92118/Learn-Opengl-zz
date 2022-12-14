@@ -8,7 +8,11 @@
 
 通过使用Assimp，我们可以加载不同的模型到程序中，但是载入后它们都被储存为Assimp的数据结构。我们最终仍要将这些数据转换为OpenGL能够理解的格式，这样才能渲染这个物体。我们从上一节中学到，网格(Mesh)代表的是单个的可绘制实体，我们现在先来定义一个我们自己的网格类。
 
-首先我们来回顾一下我们目前学到的知识，想想一个网格最少需要什么数据。一个网格应该至少需要一系列的顶点，每个顶点包含一个位置向量、一个法向量和一个纹理坐标向量。一个网格还应该包含用于索引绘制的索引以及纹理形式的材质数据（漫反射/镜面光贴图）。
+首先我们来回顾一下我们目前学到的知识，想想一个网格最少需要什么数据。
+
+* ***一个网格应该至少需要一系列的顶点，每个顶点包含一个位置向量、一个法向量和一个纹理坐标向量。***
+
+* ***一个网格还应该包含用于索引绘制的索引以及纹理形式的材质数据（漫反射/镜面光贴图）。***
 
 既然我们有了一个网格类的最低需求，我们可以在OpenGL中定义一个顶点了：
 
@@ -38,7 +42,7 @@ class Mesh {
     public:
         /*  网格数据  */
         vector<Vertex> vertices;
-        vector<unsigned int> indices;
+        vector<unsigned int> indices;//纹理id
         vector<Texture> textures;
         /*  函数  */
         Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
@@ -85,6 +89,7 @@ void setupMesh()
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);  
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //buffer大小
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), 
                  &indices[0], GL_STATIC_DRAW);
 
@@ -122,13 +127,14 @@ glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL
 
 自然`sizeof`运算也可以用在结构体上来计算它的字节大小。这个应该是32字节的（8个float * 每个4字节）。
 
-结构体的另外一个很好的用途是它的预处理指令`offsetof(s, m)`，它的第一个参数是一个结构体，第二个参数是这个结构体中变量的名字。这个宏会返回那个变量距结构体头部的字节偏移量(Byte Offset)。这正好可以用在定义<fun>glVertexAttribPointer</fun>函数中的偏移参数：
+***结构体的另外一个很好的用途是它的预处理指令`offsetof(s, m)`，*** 它的第一个参数是一个结构体，第二个参数是这个结构体中变量的名字。这个宏会返回那个变量距结构体头部的字节偏移量(Byte Offset)。这正好可以用在定义<fun>glVertexAttribPointer</fun>函数中的偏移参数：
 
 ```c++
+// 首地址+偏移参数
 glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal)); 
 ```
 
-偏移量现在是使用<fun>offsetof</fun>来定义了，在这里它会将法向量的字节偏移量设置为结构体中法向量的偏移量，也就是3个float，即12字节。注意，我们同样将步长参数设置为了<fun>Vertex</fun>结构体的大小。
+***偏移量现在是使用<fun>offsetof</fun>来定义了，在这里它会将法向量的字节偏移量设置为结构体中法向量的偏移量，也就是3个float，即12字节。注意，我们同样将步长参数设置为了<fun>Vertex</fun>结构体的大小。***
 
 使用这样的一个结构体不仅能够提供可读性更高的代码，也允许我们很容易地拓展这个结构。如果我们希望添加另一个顶点属性，我们只需要将它添加到结构体中就可以了。由于它的灵活性，渲染的代码不会被破坏。
 
@@ -136,7 +142,9 @@ glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(
 
 我们需要为<fun>Mesh</fun>类定义最后一个函数，它的<fun>Draw</fun>函数。在真正渲染这个网格之前，我们需要在调用<fun>glDrawElements</fun>函数之前先绑定相应的纹理。然而，这实际上有些困难，我们一开始并不知道这个网格（如果有的话）有多少纹理、纹理是什么类型的。所以我们该如何在着色器中设置纹理单元和采样器呢？
 
-为了解决这个问题，我们需要设定一个命名标准：每个漫反射纹理被命名为`texture_diffuseN`，每个镜面光纹理应该被命名为`texture_specularN`，其中`N`的范围是1到纹理采样器最大允许的数字。比如说我们对某一个网格有3个漫反射纹理，2个镜面光纹理，它们的纹理采样器应该之后会被调用：
+***为了解决这个问题，我们需要设定一个命名标准：每个漫反射纹理被命名为`texture_diffuseN`***
+
+，每个镜面光纹理应该被命名为`texture_specularN`，其中`N`的范围是1到纹理采样器最大允许的数字。比如说我们对某一个网格有3个漫反射纹理，2个镜面光纹理，它们的纹理采样器应该之后会被调用：
 
 ```c++
 uniform sampler2D texture_diffuse1;

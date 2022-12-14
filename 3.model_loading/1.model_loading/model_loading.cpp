@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <learnopengl/filesystem.h>
+//#include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <learnopengl/camera.h>
 #include <learnopengl/model.h>
@@ -78,11 +78,11 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader ourShader("1.model_loading.vs", "1.model_loading.fs");
+    Shader ourShader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\3.model_loading\\1.model_loading\\1.model_loading.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\3.model_loading\\1.model_loading\\1.model_loading.fs");
 
     // load models
     // -----------
-    Model ourModel(FileSystem::getPath("resources/objects/backpack/backpack.obj"));
+    Model ourModel("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\objects\\backpack\\backpack.obj");
 
     
     // draw in wireframe
@@ -121,6 +121,7 @@ int main()
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
+        //fsºÍvs½øÐÐdraw
         ourModel.Draw(ourShader);
 
 
