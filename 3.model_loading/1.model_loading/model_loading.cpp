@@ -82,7 +82,8 @@ int main()
 
     // load models
     // -----------
-    Model ourModel("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\objects\\backpack\\backpack.obj");
+    //Model ourModel("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\objects\\backpack\\backpack.obj");
+    Model ourModel("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\objects\\backpack.obj");
 
     
     // draw in wireframe
