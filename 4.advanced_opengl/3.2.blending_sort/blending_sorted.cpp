@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <learnopengl/filesystem.h>
+//#include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <learnopengl/camera.h>
 #include <learnopengl/model.h>
@@ -75,11 +75,13 @@ int main()
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_ONE_MINUS_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA);
 
     // build and compile shaders
     // -------------------------
-    Shader shader("3.2.blending.vs", "3.2.blending.fs");
+    Shader shader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\3.2.blending_sort\\3.2.blending.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\3.2.blending_sort\\3.2.blending.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -184,9 +186,9 @@ int main()
 
     // load textures
     // -------------
-    unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/marble.jpg").c_str());
-    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/metal.png").c_str());
-    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/window.png").c_str());
+    unsigned int cubeTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\marble.jpg");
+    unsigned int floorTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\metal.png");
+    unsigned int transparentTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\window.png");
 
     // transparent window locations
     // --------------------------------

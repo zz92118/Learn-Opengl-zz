@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <learnopengl/filesystem.h>
+//#include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <learnopengl/camera.h>
 #include <learnopengl/model.h>
@@ -77,7 +77,7 @@ int main()
 
      // build and compile shaders
     // -------------------------
-    Shader shader("3.1.blending.vs", "3.1.blending.fs");
+    Shader shader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\3.1.blending_discard\\3.1.blending.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\3.1.blending_discard\\3.1.blending.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -137,6 +137,7 @@ int main()
     };
     float transparentVertices[] = {
         // positions         // texture Coords (swapped y coordinates because texture is flipped upside down)
+        // 四边形的位置 VAO
         0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
         0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
         1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
@@ -182,9 +183,9 @@ int main()
 
     // load textures
     // -------------
-    unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/marble.jpg").c_str());
-    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/metal.png").c_str());
-    unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/grass.png").c_str());
+    unsigned int cubeTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\marble.jpg");
+    unsigned int floorTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\metal.png");
+    unsigned int transparentTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\grass.png");
 
     // transparent vegetation locations
     // --------------------------------
@@ -238,7 +239,7 @@ int main()
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
         shader.setMat4("model", model);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawArrays(GL_TRIANGLES, 0, 36);//36个点
         // floor
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
@@ -246,6 +247,7 @@ int main()
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         // vegetation
+        // 四边形的位置 VAO
         glBindVertexArray(transparentVAO);
         glBindTexture(GL_TEXTURE_2D, transparentTexture);
         for (unsigned int i = 0; i < vegetation.size(); i++)

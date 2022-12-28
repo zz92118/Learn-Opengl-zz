@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <learnopengl/filesystem.h>
+//#include <learnopengl/filesystem.h>
 #include <learnopengl/shader.h>
 #include <learnopengl/camera.h>
 #include <learnopengl/model.h>
@@ -75,10 +75,11 @@ int main()
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS); // always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
+    //glDepthFunc(GL_LESS); // always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
 
     // build and compile shaders
     // -------------------------
-    Shader shader("1.1.depth_testing.vs", "1.1.depth_testing.fs");
+    Shader shader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\1.1.depth_testing\\1.1.depth_testing.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\1.1.depth_testing\\1.1.depth_testing.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -163,8 +164,8 @@ int main()
 
     // load textures
     // -------------
-    unsigned int cubeTexture  = loadTexture(FileSystem::getPath("resources/textures/marble.jpg").c_str());
-    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/metal.png").c_str());
+    unsigned int cubeTexture  = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\marble.jpg");
+    unsigned int floorTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\metal.png");
 
     // shader configuration
     // --------------------

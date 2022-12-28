@@ -1,3 +1,12 @@
+//1. 在绘制（需要添加轮廓的）物体之前，将模板函数设置为<var>GL_ALWAYS< / var>，每当物体的片段被渲染时，将模板缓冲更新为1。
+//2. 渲染物体。
+//3. 禁用模板写入以及深度测试。
+//4. 将每个物体缩放一点点。
+//5. 使用一个不同的片段着色器，输出一个单独的（边框）颜色。
+//6. 再次绘制物体，但只在它们片段的模板值不等于1时才绘制。
+//7. 再次启用模板写入和深度测试。
+
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
@@ -6,7 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <learnopengl/filesystem.h>
+//#include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <learnopengl/camera.h>
 #include <learnopengl/model.h>
@@ -72,6 +81,7 @@ int main()
     }
 
     // configure global opengl state
+    // 全局设置
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -81,8 +91,8 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("2.stencil_testing.vs", "2.stencil_testing.fs");
-    Shader shaderSingleColor("2.stencil_testing.vs", "2.stencil_single_color.fs");
+    Shader shader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\2.stencil_testing\\2.stencil_testing.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\2.stencil_testing\\2.stencil_testing.fs");
+    Shader shaderSingleColor("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\2.stencil_testing\\2.stencil_testing.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\2.stencil_testing\\2.stencil_single_color.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -167,8 +177,8 @@ int main()
 
     // load textures
     // -------------
-    unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/marble.jpg").c_str());
-    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/metal.png").c_str());
+    unsigned int cubeTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\marble.jpg");
+    unsigned int floorTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\metal.png");
 
     // shader configuration
     // --------------------
@@ -179,6 +189,7 @@ int main()
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        // 进入循环体内部
         // per-frame time logic
         // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -192,7 +203,7 @@ int main()
         // render
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // don't forget to clear the stencil buffer!
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); // don't forget to clear the stencil buffer! 清除模板缓存
 
         // set uniforms
         shaderSingleColor.use();
@@ -207,7 +218,7 @@ int main()
         shader.setMat4("projection", projection);
 
         // draw floor as normal, but don't write the floor to the stencil buffer, we only care about the containers. We set its mask to 0x00 to not write to the stencil buffer.
-        glStencilMask(0x00);
+        glStencilMask(0x00); // 确保在地板的时候不会更新缓冲
         // floor
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
@@ -215,7 +226,7 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
-        // 1st. render pass, draw objects as normal, writing to the stencil buffer
+        // 1st. render pass, draw objects as normal, writing to the stencil buffer 启用模板缓存更新为1
         // --------------------------------------------------------------------
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
         glStencilMask(0xFF);
@@ -235,9 +246,9 @@ int main()
         // Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing 
         // the objects' size differences, making it look like borders.
         // -----------------------------------------------------------------------------------------------------------------------------
-        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-        glStencilMask(0x00);
-        glDisable(GL_DEPTH_TEST);
+        glStencilFunc(GL_NOTEQUAL, 1, 0xFF);//只在buffer不一样的地方绘制
+        glStencilMask(0x00);//确保在测试的时候不会更新缓冲
+        glDisable(GL_DEPTH_TEST); //这里取消掉深度测试 旋转矩阵
         shaderSingleColor.use();
         float scale = 1.1f;
         // cubes
@@ -254,6 +265,7 @@ int main()
         shaderSingleColor.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
+        // 重新启用模板测试的掩码和深度测试
         glStencilMask(0xFF);
         glStencilFunc(GL_ALWAYS, 0, 0xFF);
         glEnable(GL_DEPTH_TEST);

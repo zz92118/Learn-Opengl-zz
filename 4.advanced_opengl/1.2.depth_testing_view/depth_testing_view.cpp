@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <learnopengl/filesystem.h>
+//#include <learnopengl/filesystem.h>
 #include <learnopengl/shader_m.h>
 #include <learnopengl/camera.h>
 #include <learnopengl/model.h>
@@ -78,7 +78,7 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader shader("1.2.depth_testing.vs", "1.2.depth_testing.fs");
+    Shader shader("D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\1.2.depth_testing_view\\1.2.depth_testing.vs", "D:\\Desktop\\Cpp\\LearnOpenGL-master\\src\\4.advanced_opengl\\1.2.depth_testing_view\\1.2.depth_testing.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -163,8 +163,8 @@ int main()
 
     // load textures
     // -------------
-    unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/marble.jpg").c_str());
-    unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/metal.png").c_str());
+    unsigned int cubeTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\marble.jpg");
+    unsigned int floorTexture = loadTexture("D:\\Desktop\\Cpp\\LearnOpenGL-master\\resources\\textures\\metal.png");
 
     // shader configuration
     // --------------------
