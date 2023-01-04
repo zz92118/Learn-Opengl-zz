@@ -331,3 +331,69 @@ FragColor = vec4(result, 1.0);
 法线矩阵 
 
 ***但是对于一个高效的应用来说，你最好先在CPU上计算出法线矩阵，再通过uniform把它传递给着色器（就像模型矩阵一样）。***
+
+
+注意一下shader里的写法
+
+```C
+// fragment shader
+#version 330 core
+out vec4 FragColor;
+
+in vec3 Normal;  
+in vec3 FragPos;  
+  
+uniform vec3 lightPos; 
+uniform vec3 viewPos; 
+uniform vec3 lightColor;
+uniform vec3 objectColor;
+
+void main()
+{
+    // ambient
+    float ambientStrength = 0.5;
+    vec3 ambient = ambientStrength * lightColor;
+  	
+    // diffuse 
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * lightColor;
+    
+    // specular
+    float specularStrength = 0.9; //强度参数
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);   //计算反射方向
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    vec3 specular = specularStrength * spec * lightColor;  
+        
+    vec3 result = (ambient + diffuse + specular) * objectColor;
+    FragColor = vec4(result, 1.0);
+} 
+```
+
+
+```C
+// vertex shader
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+
+out vec3 FragPos;
+out vec3 Normal; //法线的计算写在 vertex shader里面了 ，这个需要用来计算difuss和specular的反射光
+
+//法线的不具备MVP变换不变性 必须要重新计算法线向量
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+    FragPos = vec3(model * vec4(aPos, 1.0)); //帧的位置 只需要*model矩阵
+    Normal = mat3(transpose(inverse(model))) * aNormal;  
+    
+    gl_Position = projection * view * vec4(FragPos, 1.0);
+}
+
+```
